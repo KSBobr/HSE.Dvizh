@@ -12,11 +12,12 @@ def init_db():
 
 class User:
     @staticmethod
-    def create(name: str, email: str, password: str):
+    def create(name: str, email: str, password: str, role: str):
         return db.users.insert_one({
             "name": name,
             "email": email,
             "password": password,
+            "role": role,
             "registration_date": datetime.now(),
             "friends": [],
             "favorite_events": [],
