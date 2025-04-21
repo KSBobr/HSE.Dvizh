@@ -8,7 +8,8 @@ db = client[config.DB_NAME]
 def init_db():
     db.users.create_index([("email", 1)], unique=True)
     db.events.create_index([("title", "text")])
-    db.achievements.create_index([("user_id", 1), ("event_id", 1)])
+    db.achievements.create_index(["achievement_name"])
+    db.categories.create_index(["category_name"])
 
 class User:
     @staticmethod
@@ -60,11 +61,12 @@ class User:
 
 class Event:
     @staticmethod
-    def create(title: str, date: datetime, location: str):
+    def create(title: str, date: datetime, location: str, category: ObjectId):
         return db.events.insert_one({
             "title": title,
             "date": date,
             "location": location,
+            "category": category,
             "users": [],
             "organizers": [],
             "status": "planned"
@@ -82,7 +84,12 @@ class Event:
             {"_id": ObjectId(event_id)},
             {"$addToSet": {"users": ObjectId(user_id)}}
         )
-
+class Category:
+    @staticmethod
+    def create(name: str):
+        return db.categories.insert_one({
+            "category_name": name
+        })
 class Achievement:
     @staticmethod
     def create(name: str):
