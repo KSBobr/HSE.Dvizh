@@ -20,17 +20,27 @@ class User:
             "role": role,
             "registration_date": datetime.now(),
             "friends": [],
+            "events":[],
             "favorite_events": [],
-            "Achievements": []
+            "achievements": [],
+            "number_of_event": 0,
+            "number_of-org_event": 0
             # pictures
         })
 
     @staticmethod
     def get_by_id(user_id: str):
         return db.users.find_one({"_id": ObjectId(user_id)})
-
     @staticmethod
     def add_event(user_id: str, event_id: str):
+        return db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$addToSet": {"events": ObjectId(event_id)},
+             "$inc": {"number_of_event":1}}
+        )
+
+    @staticmethod
+    def add_f_event(user_id: str, event_id: str):
         return db.users.update_one(
             {"_id": ObjectId(user_id)},
             {"$addToSet": {"favorite_events": ObjectId(event_id)}}
@@ -60,7 +70,7 @@ class Event:
             "status": "planned"
             #"pictures":[???]
         })
-
+    
     @staticmethod
     def add_user(event_id: str, user_id: str):
         return db.events.update_one(
